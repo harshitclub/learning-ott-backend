@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Learning OTT Platform",
+  "description": "A Node.js + TypeScript backend service powering an OTT platform, featuring RESTful APIs, Prisma ORM, Redis caching, and robust middleware for authentication, logging, and performance optimization.",
   "license": "ISC",
   "author": "Harshit Kumar",
   "type": "commonjs",
