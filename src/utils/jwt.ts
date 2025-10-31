@@ -1,13 +1,13 @@
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import { config } from "../configs/config";
-import { logger } from "../configs/logger";
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import { config } from '../configs/config'
+import { logger } from '../configs/logger'
 
-dotenv.config();
+dotenv.config()
 
-const JWT_VERIFICATION_SECRET = config.JWT.VERIFICATION_SECRET;
-const JWT_ACCESS_SECRET = config.JWT.ACCESS_SECRET;
-const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET;
+const JWT_VERIFICATION_SECRET = config.JWT.VERIFICATION_SECRET
+const JWT_ACCESS_SECRET = config.JWT.ACCESS_SECRET
+const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET
 
 /**
  * Generate a verification token (e.g., email verification, password reset)
@@ -16,9 +16,9 @@ const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET;
  */
 export const generateVerificationToken = (payload: object): string => {
   return jwt.sign(payload, JWT_VERIFICATION_SECRET, {
-    expiresIn: "15m",
-  });
-};
+    expiresIn: '15m'
+  })
+}
 
 /**
  * Verify a verification token
@@ -28,12 +28,12 @@ export const generateVerificationToken = (payload: object): string => {
  */
 export const verifyVerificationToken = (token: string) => {
   try {
-    return jwt.verify(token, JWT_VERIFICATION_SECRET);
+    return jwt.verify(token, JWT_VERIFICATION_SECRET)
   } catch (err) {
-    logger.error("Invalid or expired verification token");
-    throw err;
+    logger.error('Invalid or expired verification token')
+    throw err
   }
-};
+}
 
 /**
  * Generate an access token (used for authenticating API requests)
@@ -42,9 +42,9 @@ export const verifyVerificationToken = (token: string) => {
  */
 export const generateAccessToken = (payload: object): string => {
   return jwt.sign(payload, JWT_ACCESS_SECRET, {
-    expiresIn: 3600, // 1 hour
-  });
-};
+    expiresIn: 3600 // 1 hour
+  })
+}
 
 /**
  * Verify an access token
@@ -54,12 +54,12 @@ export const generateAccessToken = (payload: object): string => {
  */
 export const verifyAccessToken = (token: string) => {
   try {
-    return jwt.verify(token, JWT_ACCESS_SECRET);
+    return jwt.verify(token, JWT_ACCESS_SECRET)
   } catch (err) {
-    logger.error("Invalid or expired access token");
-    throw err;
+    logger.error('Invalid or expired access token')
+    throw err
   }
-};
+}
 
 /**
  * Generate a refresh token (used to get new access token)
@@ -68,9 +68,9 @@ export const verifyAccessToken = (token: string) => {
  */
 export const generateRefreshToken = (payload: object): string => {
   return jwt.sign(payload, JWT_REFRESH_SECRET, {
-    expiresIn: 604800, // 7 days
-  });
-};
+    expiresIn: 604800 // 7 days
+  })
+}
 
 /**
  * Verify a refresh token
@@ -80,9 +80,9 @@ export const generateRefreshToken = (payload: object): string => {
  */
 export const verifyRefreshToken = (token: string) => {
   try {
-    return jwt.verify(token, JWT_REFRESH_SECRET);
+    return jwt.verify(token, JWT_REFRESH_SECRET)
   } catch (err) {
-    logger.error("Invalid or expired refresh token");
-    throw err;
+    logger.error('Invalid or expired refresh token')
+    throw err
   }
-};
+}

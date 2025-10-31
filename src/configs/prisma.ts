@@ -1,17 +1,19 @@
-import { PrismaClient } from "../../generated/prisma";
-import { logger } from "./logger";
+import { PrismaClient } from '../../generated/prisma'
+import { logger } from './logger'
 
-let prisma: PrismaClient;
-
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
-  logger.info("Prisma Client initialized for production.");
-} else {
-  if (!(global as any).prisma) {
-    (global as any).prisma = new PrismaClient();
-    logger.info("Prisma Client initialized for development.");
-  }
-  prisma = (global as any).prisma;
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient
 }
 
-export { prisma };
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error']
+  })
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+logger.info(`Prisma Client initialized for ${process.env.NODE_ENV} mode.`)

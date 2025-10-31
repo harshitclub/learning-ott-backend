@@ -10,8 +10,6 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm install
 
-RUN npx prisma generate
-
 # Copy the rest of the project (including prisma folder)
 COPY . .
 
@@ -22,4 +20,4 @@ RUN npm run build
 EXPOSE 3002
 
 # Start app with PM2 in production
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "pm2:start"]
