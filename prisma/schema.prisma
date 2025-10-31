@@ -9,8 +9,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id                String    @id @default(uuid())
+  email             String    @unique
+  emailVerified     Boolean   @default(false)
+  passwordHash      String
+  firstName         String
+  lastName          String
+  username          String?   @unique
+  phone             String?
+  isDisabled        Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  profile           Json?
+  role              Role      @default(USER)
+  lastLoginAt       DateTime?
+  failedLogins      Int       @default(0)
+  passwordChangedAt DateTime?
+  metadata          Json?
+
+  // verification / reset tokens (hashed)
+  emailVerificationTokenHash String? // SHA256 hash of verification token
+  emailVerificationExpiresAt DateTime? // expiry for verification token
+  emailVerificationUsed      Boolean   @default(false)
+
+  passwordResetTokenHash String? // SHA256 hash of reset token
+  passwordResetExpiresAt DateTime?
+  passwordResetUsed      Boolean   @default(false)
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([emailVerificationExpiresAt])
+  @@index([passwordResetExpiresAt])
+}
+
+model Admin {
+  id            String    @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  passwordHash  String
+  username      String?   @unique
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          Role      @default(ADMIN)
+  isSuperAdmin  Boolean   @default(false)
+  notes         String?
+  lastLoginAt   DateTime?
+  metadata      Json?
+
+  // verification / reset tokens (hashed)
+  emailVerificationTokenHash String?
+  emailVerificationExpiresAt DateTime?
+  emailVerificationUsed      Boolean   @default(false)
+
+  passwordResetTokenHash String?
+  passwordResetExpiresAt DateTime?
+  passwordResetUsed      Boolean   @default(false)
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([emailVerificationExpiresAt])
+  @@index([passwordResetExpiresAt])
 }
