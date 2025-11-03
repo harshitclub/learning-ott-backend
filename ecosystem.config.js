@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'ott-backend',
       script: './dist/index.js',
-      instances: 1,
+      instances: 'max',
       exec_mode: 'cluster',
       watch: 'false',
       env_production: {
