@@ -1,10 +1,16 @@
 import express from 'express'
+import {
+  userLogin,
+  userProfile,
+  userSignup,
+  userUpdate
+} from '../../controllers/user.controllers'
 
-const userRouter = express.Router()
+const userRoutesV1 = express.Router()
 
-userRouter.post('/signup', () => {})
-userRouter.post('/login', () => {})
-userRouter.get('/me', () => {})
-userRouter.patch('/me', () => {})
+userRoutesV1.post('/signup', userSignup)
+userRoutesV1.post('/login', userLogin)
+userRoutesV1.get('/me', userProfile)
+userRoutesV1.patch('/me', userUpdate)
 
-export default userRouter
+export default userRoutesV1
