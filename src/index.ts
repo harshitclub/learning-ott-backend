@@ -33,8 +33,8 @@ import { logger } from './configs/logger'
 import { config } from './configs/config'
 import { prisma } from './configs/prisma'
 import redisCache from './configs/redisCache'
-import userRouter from './routes/v1/user.routes'
-import adminRouter from './routes/v1/admin.routes'
+import adminRoutesV1 from './routes/v1/admin.routes'
+import userRoutesV1 from './routes/v1/user.routes'
 
 /* ---------------------------------
  * Initialize Express app
@@ -92,8 +92,8 @@ app.get('/api/health', (_req: Request, res: Response) => {
 /* ---------------------------------
  * API Routes
  * --------------------------------- */
-app.use('/api/v1/users', userRouter)
-app.use('/api/v1/admins', adminRouter)
+app.use('/api/v1/users', userRoutesV1)
+app.use('/api/v1/admins', adminRoutesV1)
 
 /* ---------------------------------
  * 404 Route Handler

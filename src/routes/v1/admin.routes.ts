@@ -1,10 +1,16 @@
 import express from 'express'
+import {
+  adminLogin,
+  adminProfile,
+  adminSignup,
+  adminUpdate
+} from '../../controllers/admin.controllers'
 
-const adminRouter = express.Router()
+const adminRoutesV1 = express.Router()
 
-adminRouter.post('/signup', () => {})
-adminRouter.post('/login', () => {})
-adminRouter.get('/me', () => {})
-adminRouter.patch('/me', () => {})
+adminRoutesV1.post('/signup', adminSignup)
+adminRoutesV1.post('/login', adminLogin)
+adminRoutesV1.get('/me', adminProfile)
+adminRoutesV1.patch('/me', adminUpdate)
 
-export default adminRouter
+export default adminRoutesV1
