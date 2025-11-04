@@ -7,15 +7,15 @@ import {
   getServerTime,
   getUptime,
   ping
-} from '../../controllers/system.controllers'
+} from '../../controllers/v1/system.controllers'
 
-const healthRoutes = express.Router()
+const systemRoutesV1 = express.Router()
 
-healthRoutes.get('/health', asyncHandler(checkHealth))
-healthRoutes.get('/info', asyncHandler(getAppInfo))
-healthRoutes.get('/time', asyncHandler(getServerTime))
-healthRoutes.get('/ping', asyncHandler(ping))
-healthRoutes.get('/uptime', asyncHandler(getUptime))
-healthRoutes.get('/memory', asyncHandler(getMemoryUsage))
+systemRoutesV1.get('/health', asyncHandler(checkHealth))
+systemRoutesV1.get('/info', asyncHandler(getAppInfo))
+systemRoutesV1.get('/time', asyncHandler(getServerTime))
+systemRoutesV1.get('/ping', asyncHandler(ping))
+systemRoutesV1.get('/uptime', asyncHandler(getUptime))
+systemRoutesV1.get('/memory', asyncHandler(getMemoryUsage))
 
-export default healthRoutes
+export default systemRoutesV1

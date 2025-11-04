@@ -4,7 +4,7 @@ import {
   adminProfile,
   adminSignup,
   adminUpdate
-} from '../../controllers/admin.controllers'
+} from '../../controllers/v1/admin.controllers'
 import { asyncHandler } from '../../middlewares/asyncHandler'
 
 const adminRoutesV1 = express.Router()
