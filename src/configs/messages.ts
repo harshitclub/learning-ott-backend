@@ -1,57 +1,89 @@
 export const Messages = {
-  // General
+  // General / System
   SUCCESS: 'Operation completed successfully',
-  FAILED: 'Something went wrong',
-  VALIDATION_FAILED: 'Validation failed',
-  NOT_FOUND: 'Resource not found',
-  UNAUTHORIZED: 'Unauthorized access',
-  FORBIDDEN: 'You do not have permission to perform this action',
+  FAILED: 'An error occurred. Please try again later',
   SERVER_ERROR: 'Internal server error',
   BAD_REQUEST: 'Bad request',
-  TOO_MANY_REQUESTS: 'Too many requests, please try again later',
+  VALIDATION_FAILED: 'Validation failed',
+  NOT_FOUND: 'Requested resource not found',
+  ROUTE_NOT_FOUND: 'Endpoint not found',
+  UNAUTHORIZED: 'Authentication required',
+  FORBIDDEN: 'Access denied',
+  TOO_MANY_REQUESTS: 'Too many requests. Please try again later',
+  UNDER_MAINTENANCE: 'Service is temporarily unavailable for maintenance',
+  FEATURE_UNAVAILABLE: 'This feature is currently unavailable',
 
-  // User-related
-  USER_CREATED: 'User registered successfully',
-  USER_UPDATED: 'User profile updated successfully',
-  USER_DELETED: 'User deleted successfully',
-  USER_NOT_FOUND: 'User not found',
-  USER_ALREADY_EXISTS: 'User with this email already exists',
-  EMAIL_ALREADY_IN_USE: 'Email already in use',
-  USER_DISABLED: 'User account is disabled',
-  PASSWORD_CHANGED: 'Password changed successfully',
-
-  // Auth-related
+  // Auth & Tokens
   LOGIN_SUCCESS: 'Login successful',
   LOGIN_FAILED: 'Invalid credentials',
-  LOGOUT_SUCCESS: 'Logout successful',
-  TOKEN_REFRESHED: 'Access token refreshed successfully',
+  LOGOUT_SUCCESS: 'Logged out successfully',
   TOKEN_INVALID: 'Invalid or expired token',
   TOKEN_REQUIRED: 'Authorization token required',
-  ACCESS_DENIED: 'Access denied',
+  TOKEN_REFRESHED: 'Access token refreshed',
+  TOKEN_REVOKED: 'Session revoked',
+  SESSION_NOT_FOUND: 'Session not found',
+  ACCESS_DENIED: 'You do not have permission to perform this action',
+
+  // User & Account
+  USER_CREATED: 'Account created successfully',
+  USER_UPDATED: 'Account updated successfully',
+  USER_DELETED: 'Account deleted successfully',
+  USER_NOT_FOUND: 'User not found',
+  USER_ALREADY_EXISTS: 'Unable to create account with provided email',
   EMAIL_VERIFIED: 'Email verified successfully',
   EMAIL_NOT_VERIFIED: 'Email not verified',
-  VERIFICATION_EMAIL_SENT: 'Verification email sent',
-  PASSWORD_RESET_REQUESTED: 'Password reset link sent successfully',
-  PASSWORD_RESET_SUCCESS: 'Password reset successful',
-  PASSWORD_RESET_FAILED: 'Password reset failed',
+  VERIFICATION_EMAIL_SENT: 'Verification email has been sent',
+  VERIFICATION_TOKEN_EXPIRED: 'Verification token has expired',
+  VERIFICATION_TOKEN_INVALID: 'Verification token is invalid or already used',
+  PASSWORD_CHANGED: 'Password changed successfully',
+  PASSWORD_RESET_REQUESTED:
+    'If an account exists, a password reset link has been sent',
+  PASSWORD_RESET_SUCCESS: 'Password has been reset successfully',
+  PASSWORD_RESET_FAILED: 'Unable to reset password',
+  PASSWORD_WEAK: 'Password does not meet complexity requirements',
 
-  // System
-  SERVER_HEALTHY: 'Server is healthy',
-  SYSTEM_STATUS_OK: 'System status OK',
-  ROUTE_NOT_FOUND: 'Route not found',
-  CONFIG_ERROR: 'Configuration error detected',
+  // Security / Abuse
+  ACCOUNT_LOCKED: 'Account temporarily locked due to multiple failed attempts',
+  CAPTCHA_REQUIRED: 'Please complete the CAPTCHA challenge',
+  RATE_LIMITED: 'Rate limit exceeded. Try again later',
+  SUSPICIOUS_ACTIVITY:
+    'Suspicious activity detected. Please verify your account',
 
-  // Database
-  DB_CONNECTION_SUCCESS: 'Database connection successful',
-  DB_CONNECTION_ERROR: 'Database connection failed',
-  DB_OPERATION_FAILED: 'Database operation failed',
-
-  // Email
+  // Email / Notifications
   EMAIL_SENT: 'Email sent successfully',
   EMAIL_FAILED: 'Failed to send email',
 
+  // Database / Integration
+  DB_CONNECTION_ERROR: 'Unable to connect to database',
+  DB_OPERATION_FAILED: 'Database operation failed',
+  EXTERNAL_SERVICE_ERROR: 'External service error. Please try again later',
+
+  // Files / Uploads
+  FILE_UPLOAD_SUCCESS: 'File uploaded successfully',
+  FILE_UPLOAD_FAILED: 'File upload failed',
+  FILE_TOO_LARGE: 'Uploaded file is too large',
+  FILE_TYPE_NOT_ALLOWED: 'Uploaded file type is not allowed',
+
+  // Admin / Management
+  ADMIN_CREATED: 'Administrator account created',
+  ADMIN_UPDATED: 'Administrator updated',
+  ADMIN_DELETED: 'Administrator deleted',
+
   // Misc
-  FEATURE_UNAVAILABLE: 'This feature is not available yet',
-  UNDER_MAINTENANCE: 'Service is under maintenance',
-  INVALID_REQUEST: 'Invalid request format'
+  INVALID_REQUEST: 'Invalid request format',
+  CONFIG_ERROR: 'Service configuration error',
+  HEALTH_OK: 'OK'
+}
+
+// Optional: machine-friendly error codes (useful for frontend localization & logic)
+export const MessageCodes = {
+  VALIDATION_FAILED: 'VALIDATION_FAILED',
+  USER_EXISTS: 'USER_ALREADY_EXISTS',
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
+  VERIFICATION_EXPIRED: 'VERIFICATION_TOKEN_EXPIRED',
+  PASSWORD_WEAK: 'PASSWORD_WEAK',
+  ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
+  RATE_LIMITED: 'RATE_LIMITED',
+  TOKEN_INVALID: 'TOKEN_INVALID',
+  SERVER_ERROR: 'SERVER_ERROR'
 }

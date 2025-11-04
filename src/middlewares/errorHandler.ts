@@ -1,10 +1,16 @@
-// src/middlewares/errorHandler.ts
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { AppError } from '../utils/appError'
 import { ApiResponse, ApiError } from '../utils/apiResponse'
 import { logger } from '../configs/logger'
+import { Messages } from '../configs/messages'
 
-export const errorHandler = (err: unknown, req: Request, res: Response) => {
+export const errorHandler = (
+  err: unknown,
+  req: Request,
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction
+) => {
   // Normalize error to AppError
   let appErr: AppError
 
@@ -12,7 +18,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response) => {
     appErr = err
   } else if (err instanceof Error) {
     // Unexpected/native Error -> wrap as 500 AppError
-    appErr = new AppError(err.message || 'Internal Server Error', 500)
+    appErr = new AppError(err.message || Messages.SERVER_ERROR, 500)
     appErr.isOperational = false
   } else {
     // Non-error thrown value
@@ -26,7 +32,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response) => {
   const message =
     process.env.NODE_ENV === 'development' || appErr.isOperational
       ? appErr.message
-      : 'Something went wrong'
+      : Messages.FAILED
 
   // Log structured error details
   logger.error({
