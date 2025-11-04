@@ -4,7 +4,7 @@ import {
   userProfile,
   userSignup,
   userUpdate
-} from '../../controllers/user.controllers'
+} from '../../controllers/v1/user.controllers'
 import { asyncHandler } from '../../middlewares/asyncHandler'
 
 const userRoutesV1 = express.Router()

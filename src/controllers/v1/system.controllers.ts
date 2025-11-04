@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { logger } from '../configs/logger'
-import { ApiResponse } from '../utils/apiResponse'
+import { logger } from '../../configs/logger'
+import { ApiResponse } from '../../utils/apiResponse'
 
 export async function notFound(req: Request, res: Response) {
   return ApiResponse.error(
