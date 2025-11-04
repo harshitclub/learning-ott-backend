@@ -11,7 +11,7 @@
  * ===========================================================
  */
 
-import express, { Application, Request, Response } from 'express'
+import express, { Application } from 'express'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -35,7 +35,8 @@ import { prisma } from './configs/prisma'
 import redisCache from './configs/redisCache'
 import adminRoutesV1 from './routes/v1/admin.routes'
 import userRoutesV1 from './routes/v1/user.routes'
-import healthRoutes from './routes/v1/health.routes'
+import healthRoutes from './routes/v1/system.routes'
+import { notFound } from './controllers/system.controllers'
 
 /* ---------------------------------
  * Initialize Express app
@@ -78,7 +79,7 @@ app.use(cors({ origin: '*', credentials: true }))
 /* ---------------------------------
  * Health Check Route
  * --------------------------------- */
-app.get('/api/v1/system', healthRoutes)
+app.use('/api/v1/system', healthRoutes)
 
 /* ---------------------------------
  * API Routes
@@ -92,12 +93,7 @@ app.use('/api/v1/admins', adminRoutesV1)
 /**
  * Handles all unmatched routes and responds with 404.
  */
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    status: 'fail',
-    message: `Route ${req.originalUrl} not found`
-  })
-})
+app.use(notFound)
 
 /* ---------------------------------
  * Global Error Handler
