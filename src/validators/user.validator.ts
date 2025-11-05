@@ -38,10 +38,7 @@ export const loginUserValidator = z.object({
     .toLowerCase()
     .trim(),
 
-  password: z
-    .string()
-    .regex(passwordRegex, ZodErrorMessages.PASSWORD_COMPLEXITY)
-    .nonempty(ZodErrorMessages.PASSWORD_REQUIRED)
+  password: z.string().nonempty(ZodErrorMessages.PASSWORD_REQUIRED)
 })
 
 // Forget Password Validator

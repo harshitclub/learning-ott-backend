@@ -42,6 +42,9 @@ model User {
   passwordResetExpiresAt DateTime?
   passwordResetUsed      Boolean   @default(false)
 
+  // relations
+  refreshTokens UserRefreshToken[]
+
   @@index([email])
   @@index([createdAt])
   @@index([emailVerificationExpiresAt])
@@ -72,10 +75,45 @@ model Admin {
 
   passwordResetTokenHash String?
   passwordResetExpiresAt DateTime?
-  passwordResetUsed      Boolean   @default(false)
+  passwordResetUsed      Boolean             @default(false)
+  AdminRefreshToken      AdminRefreshToken[]
 
   @@index([email])
   @@index([createdAt])
   @@index([emailVerificationExpiresAt])
   @@index([passwordResetExpiresAt])
+}
+
+model UserRefreshToken {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  deviceId   String?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+  replacedBy String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AdminRefreshToken {
+  id         String   @id @default(uuid())
+  adminId    String
+  admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  deviceId   String?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+  replacedBy String?
+
+  @@index([adminId])
+  @@index([expiresAt])
 }
