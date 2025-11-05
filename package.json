@@ -13,6 +13,8 @@
     "pm2:stop": "pm2 stop ecosystem.config.js",
     "pm2:restart": "pm2 restart ecosystem.config.js",
     "pm2:delete": "pm2 delete ecosystem.config.js",
+    "pm2:flush": "pm2 flush",
+    "pm2:reset": "pm2 reset all",
     "pm2:logs": "pm2 logs",
     "pm2:monit": "pm2 monit",
     "pm2:list": "pm2 list",

@@ -1,0 +1,10 @@
+config:
+  target: 'http://localhost:3002/api/v1/users'
+  phases:
+    - duration: 60 # Run for 30 seconds
+      arrivalRate: 5000 # 10 new users per second
+scenarios:
+  - name: 'Profile Fetch'
+    flow:
+      - get:
+          url: '/me'

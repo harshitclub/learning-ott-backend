@@ -23,6 +23,9 @@ export const Messages = {
   TOKEN_REVOKED: 'Session revoked',
   SESSION_NOT_FOUND: 'Session not found',
   ACCESS_DENIED: 'You do not have permission to perform this action',
+  REFRESH_TOKEN_MISSING: 'Refresh token missing',
+  REFRESH_TOKEN_INVALID: 'Invalid or expired refresh token',
+  REFRESH_TOKEN_EXPIRED: 'Refresh token expired',
 
   // User & Account
   USER_CREATED: 'Account created successfully',

@@ -1,0 +1,17 @@
+config:
+  target: "http://localhost:3002"
+  phases:
+    - duration: 60           
+      arrivalRate: 200        
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "User Login Test"
+    flow:
+      - post:
+          url: "/api/v1/users/login"
+          json:
+            email: "harshitclub@gmail.com"
+            password: "Harshit@123"

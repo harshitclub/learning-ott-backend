@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+  refreshHandler,
   userLogin,
   userProfile,
   userSignup,
@@ -13,5 +14,6 @@ userRoutesV1.post('/signup', asyncHandler(userSignup))
 userRoutesV1.post('/login', asyncHandler(userLogin))
 userRoutesV1.get('/me', asyncHandler(userProfile))
 userRoutesV1.patch('/me', asyncHandler(userUpdate))
+userRoutesV1.post('/refresh', asyncHandler(refreshHandler))
 
 export default userRoutesV1
