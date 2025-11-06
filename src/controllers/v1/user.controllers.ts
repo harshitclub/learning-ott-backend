@@ -14,17 +14,16 @@ import redisCache from '../../configs/redisCache'
 import {
   generateAccessToken,
   generateRefreshTokenWithJti,
-  REFRESH_TOKEN_TTL_SECONDS,
   sha256Hex,
   verifyRefreshToken
 } from '../../utils/jwt'
 import { JwtPayload } from 'jsonwebtoken'
+import { config } from '../../configs/config'
 
-const REFRESH_COOKIE_NAME = 'mph_refresh_token'
-const REFRESH_COOKIE_PATH = '/'
-const REFRESH_COOKIE_SAMESITE: 'lax' | 'strict' | 'none' = 'lax'
-const REFRESH_TTL_MS = REFRESH_TOKEN_TTL_SECONDS * 1000
-const MAX_FAILED_LOGIN = 5
+// information
+const { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, REFRESH_TTL_MS } =
+  config.COOKIE
+const { MAX_FAILED_LOGIN } = config.AUTH
 
 export async function userSignup(req: Request, res: Response) {
   const parsed = await signupUserValidator.safeParseAsync(req.body)
@@ -73,6 +72,7 @@ export async function userSignup(req: Request, res: Response) {
   )
   return ApiResponse.success(req, res, 201, Messages.USER_CREATED, safeUser)
 }
+
 export async function userLogin(req: Request, res: Response) {
   // 1. Validate input
   const parsed = await loginUserValidator.safeParseAsync(req.body)
@@ -138,7 +138,7 @@ export async function userLogin(req: Request, res: Response) {
     sub: user.id
   })
   const refreshJtiHash = sha256Hex(jti)
-  const refreshExpiresAt = new Date(Date.now() + REFRESH_TTL_MS)
+  const refreshExpiresAt = new Date(Date.now() + config.COOKIE.REFRESH_TTL_MS)
 
   const userAgent = req.get('user-agent') ?? null
   const ip =
@@ -169,10 +169,10 @@ export async function userLogin(req: Request, res: Response) {
   ])
 
   // set refresh token cookie (send the JWT to client)
-  res.cookie(REFRESH_COOKIE_NAME, refreshJwt, {
+  res.cookie(String(config.COOKIE.REFRESH_COOKIE_NAME), refreshJwt, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: REFRESH_COOKIE_SAMESITE,
+    sameSite: 'lax',
     path: REFRESH_COOKIE_PATH,
     maxAge: REFRESH_TTL_MS
   })
@@ -286,7 +286,7 @@ export async function refreshHandler(req: Request, res: Response) {
   res.cookie(REFRESH_COOKIE_NAME, newRefreshJwt, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: REFRESH_COOKIE_SAMESITE,
+    sameSite: 'lax',
     path: REFRESH_COOKIE_PATH,
     maxAge: REFRESH_TTL_MS
   })

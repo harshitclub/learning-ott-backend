@@ -34,5 +34,16 @@ export const config = {
     USER: process.env.SMTP_USER!,
     PASS: process.env.SMTP_PASS!,
     MAIL_FROM: process.env.MAIL_FROM || 'No Reply <noreply@example.com>'
+  },
+
+  AUTH: {
+    MAX_FAILED_LOGIN: Number(process.env.MAX_FAILED_LOGIN)
+  },
+
+  COOKIE: {
+    REFRESH_COOKIE_NAME: process.env.REFRESH_COOKIE_NAME || '',
+    REFRESH_COOKIE_PATH: process.env.REFRESH_COOKIE_PATH,
+    REFRESH_TOKEN_TTL_SECONDS: Number(process.env.REFRESH_TOKEN_TTL_SECONDS),
+    REFRESH_TTL_MS: Number(process.env.REFRESH_TOKEN_TTL_SECONDS) * 1000
   }
 }

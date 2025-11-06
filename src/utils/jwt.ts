@@ -10,6 +10,7 @@ dotenv.config()
 const JWT_VERIFICATION_SECRET = config.JWT.VERIFICATION_SECRET
 const JWT_ACCESS_SECRET = config.JWT.ACCESS_SECRET
 const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET
+const REFRESH_TOKEN_TTL_SECONDS = config.COOKIE.REFRESH_TOKEN_TTL_SECONDS
 
 /** ---- verification token (email / reset) ---- */
 export const generateVerificationToken = (payload: object): string => {
@@ -43,7 +44,6 @@ export const verifyAccessToken = (token: string) => {
 }
 
 /** ---- refresh token (JWT) with jti support ---- */
-export const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60 // 7 days
 
 // Create refresh JWT with a unique jti and return both
 export const generateRefreshTokenWithJti = (
