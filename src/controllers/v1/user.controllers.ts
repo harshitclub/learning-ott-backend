@@ -14,13 +14,19 @@ import redisCache from '../../configs/redisCache'
 import {
   generateAccessToken,
   generateRefreshTokenWithJti,
-  sha256Hex,
   verifyRefreshToken
 } from '../../utils/jwt'
 import { JwtPayload } from 'jsonwebtoken'
 import { config } from '../../configs/config'
+import { emailQueue } from '../../queues/email.queue'
+import { verifyEmailTemplate } from '../../emails/templates/auth/verify-email'
+import { Prisma } from '../../../generated/prisma'
+import {
+  generateVerificationTokenRaw,
+  timingSafeMatch
+} from '../../utils/tokens/verificationToken'
+import { sha256Hex } from '../../utils/tokens/sha256Hex'
 
-// information
 const { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, REFRESH_TTL_MS } =
   config.COOKIE
 const { MAX_FAILED_LOGIN } = config.AUTH
@@ -32,45 +38,125 @@ export async function userSignup(req: Request, res: Response) {
   }
 
   const { firstName, lastName, email, password } = parsed.data
+  const passwordHash = await hashPassword(password)
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email }
-  })
+  // Generate email verification artifact
+  const { raw: rawToken, expiresAt } = generateVerificationTokenRaw(15)
+  const tokenHash = sha256Hex(rawToken)
 
-  if (existingUser) {
-    throw new AppError(Messages.USER_ALREADY_EXISTS, 400)
+  try {
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+
+        // store token fields
+        emailVerificationTokenHash: tokenHash,
+        emailVerificationExpiresAt: expiresAt,
+        emailVerificationUsed: false
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        emailVerified: true
+      }
+    })
+
+    await emailQueue.add('verificationEmail', {
+      to: user.email,
+      subject: 'Verify Your Email',
+      html: verifyEmailTemplate({
+        name: user.firstName,
+        token: rawToken
+      })
+    })
+
+    logger.info(
+      `${Messages.USER_CREATED} | userId=${user.id} | email=${maskEmail(user.email)} | ip=${req.ip}`
+    )
+
+    return ApiResponse.success(req, res, 201, Messages.USER_CREATED, {
+      id: user.id,
+      email: user.email,
+      name: `${user.firstName} ${user.lastName}`,
+      verified: user.emailVerified
+    })
+  } catch (err: unknown) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2002'
+    ) {
+      logger.warn(
+        `Signup attempt with existing email | email=${maskEmail(email)} | ip=${req.ip}`
+      )
+      throw new AppError(Messages.USER_ALREADY_EXISTS, 400)
+    }
+
+    const errorMessage = err instanceof Error ? err.message : String(err)
+
+    logger.error(
+      `Signup failed | email=${maskEmail(email)} | error=${errorMessage}`
+    )
+    throw err // Let global error handler respond
+  }
+}
+
+export async function userVerifyEmail(req: Request, res: Response) {
+  const token = String(req.query.token ?? req.body?.token ?? '')
+
+  if (!token) {
+    throw new AppError(Messages.MISSING_VERIFICATION_TOKEN, 400)
   }
 
-  const hashedPassword = await hashPassword(password)
+  const tokenHash = sha256Hex(token)
 
-  const user = await prisma.user.create({
-    data: {
-      firstName: firstName,
-      lastName: lastName,
-      passwordHash: hashedPassword,
-      email: email
+  // Fast prefilter using DB, then timing-safe compare for paranoia
+  const user = await prisma.user.findFirst({
+    where: {
+      emailVerificationTokenHash: tokenHash,
+      emailVerificationUsed: false,
+      emailVerificationExpiresAt: { gt: new Date() }
     },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
       email: true,
-      emailVerified: true,
-      createdAt: true
+      firstName: true,
+      emailVerificationTokenHash: true,
+      emailVerificationExpiresAt: true,
+      emailVerificationUsed: true,
+      emailVerified: true
     }
   })
 
-  const safeUser = {
-    id: user.id,
-    email: user.email,
-    name: `${user.firstName} ${user.lastName}`,
-    verified: user.emailVerified
+  if (!user) {
+    logger.warn(`Email verify failed: invalid/expired token`)
+    return ApiResponse.error(req, res, 400, Messages.INVALID_LINK)
   }
 
-  logger.info(
-    `${Messages.USER_CREATED} | userId=${user.id} | email=${maskEmail(user.email)} | ip=${req.ip}`
-  )
-  return ApiResponse.success(req, res, 201, Messages.USER_CREATED, safeUser)
+  // Extra check (defense-in-depth)
+  const matches = timingSafeMatch(token, user.emailVerificationTokenHash!)
+
+  if (!matches) {
+    logger.warn(`Email verify failed: timingSafeMatch mismatch`)
+    return ApiResponse.error(req, res, 400, Messages.INVALID_LINK)
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerified: true,
+      emailVerificationUsed: true,
+      emailVerificationTokenHash: null,
+      emailVerificationExpiresAt: null
+    }
+  })
+
+  logger.info(`Email verified | userId=${user.id}`)
+  return ApiResponse.success(req, res, 200, Messages.VERIFIED)
 }
 
 export async function userLogin(req: Request, res: Response) {

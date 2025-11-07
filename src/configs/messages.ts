@@ -26,6 +26,9 @@ export const Messages = {
   REFRESH_TOKEN_MISSING: 'Refresh token missing',
   REFRESH_TOKEN_INVALID: 'Invalid or expired refresh token',
   REFRESH_TOKEN_EXPIRED: 'Refresh token expired',
+  MISSING_VERIFICATION_TOKEN: 'Missing verification token',
+  INVALID_LINK: 'Invalid or expired link',
+  VERIFIED: 'Email verified',
 
   // User & Account
   USER_CREATED: 'Account created successfully',
