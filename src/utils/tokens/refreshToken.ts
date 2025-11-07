@@ -1,31 +1,10 @@
-// utils/jwt.ts
 import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-import { config } from '../configs/config'
-import { logger } from '../configs/logger'
 import crypto from 'crypto'
+import { config } from '../../configs/config'
+import { logger } from '../../configs/logger'
 
-dotenv.config()
-
-const JWT_ACCESS_SECRET = config.JWT.ACCESS_SECRET
 const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET
 const REFRESH_TOKEN_TTL_SECONDS = config.COOKIE.REFRESH_TOKEN_TTL_SECONDS
-
-/** ---- access token ---- */
-export const generateAccessToken = (payload: object): string => {
-  // keep existing expiry (1 hour)
-  return jwt.sign(payload, JWT_ACCESS_SECRET, {
-    expiresIn: 3600 // seconds (1 hour)
-  })
-}
-export const verifyAccessToken = (token: string) => {
-  try {
-    return jwt.verify(token, JWT_ACCESS_SECRET)
-  } catch (err) {
-    logger.error('Invalid or expired access token')
-    throw err
-  }
-}
 
 /** ---- refresh token (JWT) with jti support ---- */
 
@@ -67,9 +46,4 @@ export const decodeRefreshToken = (token: string) => {
   } catch {
     return null
   }
-}
-
-/** helper to create sha256 hex — use this to persist jti hash in DB */
-export const sha256Hex = (input: string) => {
-  return crypto.createHash('sha256').update(input).digest('hex')
 }
