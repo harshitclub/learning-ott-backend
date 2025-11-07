@@ -14,11 +14,14 @@ import redisCache from '../../configs/redisCache'
 import {
   generateAccessToken,
   generateRefreshTokenWithJti,
+  generateVerificationToken,
   sha256Hex,
   verifyRefreshToken
 } from '../../utils/jwt'
 import { JwtPayload } from 'jsonwebtoken'
 import { config } from '../../configs/config'
+import { emailQueue } from '../../queues/email.queue'
+import { verifyEmailTemplate } from '../../emails/templates/auth/verify-email'
 
 // information
 const { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, REFRESH_TTL_MS } =
@@ -59,6 +62,19 @@ export async function userSignup(req: Request, res: Response) {
       createdAt: true
     }
   })
+
+  const verificationToken = generateVerificationToken({ sub: user.id })
+
+  const mailData = {
+    to: user.email,
+    subject: 'Verify Your Email | MPH',
+    html: verifyEmailTemplate({
+      name: user.firstName,
+      token: verificationToken
+    })
+  }
+
+  await emailQueue.add('verificationEmail', mailData)
 
   const safeUser = {
     id: user.id,
