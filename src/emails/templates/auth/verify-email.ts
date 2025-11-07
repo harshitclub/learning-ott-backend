@@ -1,5 +1,3 @@
-import { config } from '../../../configs/config'
-
 export const verifyEmailTemplate = ({
   name,
   token
@@ -11,7 +9,7 @@ export const verifyEmailTemplate = ({
     <html>
     <body>
     <h1>${name}</h1>
-    <p><a href="${config.FRONTEND_URL}/verify/${token}"></a></p>
+    <p>${token}</p>
     </body>
     </html>
     `

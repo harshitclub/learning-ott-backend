@@ -7,25 +7,9 @@ import crypto from 'crypto'
 
 dotenv.config()
 
-const JWT_VERIFICATION_SECRET = config.JWT.VERIFICATION_SECRET
 const JWT_ACCESS_SECRET = config.JWT.ACCESS_SECRET
 const JWT_REFRESH_SECRET = config.JWT.REFRESH_SECRET
 const REFRESH_TOKEN_TTL_SECONDS = config.COOKIE.REFRESH_TOKEN_TTL_SECONDS
-
-/** ---- verification token (email / reset) ---- */
-export const generateVerificationToken = (payload: object): string => {
-  return jwt.sign(payload, JWT_VERIFICATION_SECRET, {
-    expiresIn: '15m'
-  })
-}
-export const verifyVerificationToken = (token: string) => {
-  try {
-    return jwt.verify(token, JWT_VERIFICATION_SECRET)
-  } catch (err) {
-    logger.error('Invalid or expired verification token')
-    throw err
-  }
-}
 
 /** ---- access token ---- */
 export const generateAccessToken = (payload: object): string => {
