@@ -8,10 +8,7 @@ import { logger } from '../../configs/logger'
 import { Messages } from '../../configs/messages'
 
 // Validators
-import {
-  loginUserValidator,
-  signupUserValidator
-} from '../../validators/user.validator'
+import { signupUserValidator } from '../../validators/user.validator'
 
 // Utils — Core
 import { ApiResponse } from '../../utils/apiResponse'
@@ -37,6 +34,8 @@ import { verifyEmailTemplate } from '../../emails/templates/auth/verify-email'
 
 // Prisma Types
 import { Prisma } from '../../../generated/prisma'
+import redisCache from '../../configs/redisCache'
+import { loginValidator } from '../../validators/common.validator'
 
 const { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, REFRESH_TTL_MS } =
   config.COOKIE
@@ -242,7 +241,7 @@ export async function userVerifyEmail(req: Request, res: Response) {
  */
 export async function userLogin(req: Request, res: Response) {
   // 1. Validate request body
-  const parsed = await loginUserValidator.safeParseAsync(req.body)
+  const parsed = await loginValidator.safeParseAsync(req.body)
   if (!parsed.success) {
     throw new AppError(Messages.VALIDATION_FAILED, 400)
   }
@@ -510,12 +509,53 @@ export async function refreshHandler(req: Request, res: Response) {
 }
 
 export async function userProfile(req: Request, res: Response) {
-  const user = req.user
-  console.log(user)
+  const userId = req.user?.id
 
-  return res.status(200).json({
-    user
+  if (!userId) {
+    throw new AppError(Messages.TOKEN_REQUIRED, 401)
+  }
+
+  const cacheKey = `user:${userId}`
+
+  // 1) Try Cache First
+  const cached = await redisCache.get(cacheKey)
+  if (cached) {
+    const user = JSON.parse(cached)
+    return ApiResponse.success(req, res, 200, Messages.PROFILE_FETCHED, {
+      user,
+      isCached: true
+    })
+  }
+
+  // 2) Cache Miss → Fetch from DB
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      emailVerified: true,
+      role: true,
+      createdAt: true,
+      profile: true
+    }
+  })
+
+  if (!user) {
+    throw new AppError(Messages.USER_NOT_FOUND, 404)
+  }
+
+  // 3) Store into Cache (optional TTL)
+  await redisCache.set(cacheKey, JSON.stringify(user), 'EX', 3600) // 10 min cache
+
+  return ApiResponse.success(req, res, 200, Messages.PROFILE_FETCHED, {
+    user,
+    isCached: false
   })
 }
 export async function userUpdate() {}
 export async function userChangePassword() {}
+export async function userRequestVerification() {}
+export async function userRequestResetPassword() {}
+export async function userResetPassword() {}

@@ -36,6 +36,7 @@ export const Messages = {
   USER_DELETED: 'Account deleted successfully',
   USER_NOT_FOUND: 'User not found',
   USER_ALREADY_EXISTS: 'Unable to create account with provided email',
+  PROFILE_FETCHED: 'Profile Fetched',
   EMAIL_VERIFIED: 'Email verified successfully',
   EMAIL_NOT_VERIFIED: 'Email not verified',
   VERIFICATION_EMAIL_SENT: 'Verification email has been sent',
