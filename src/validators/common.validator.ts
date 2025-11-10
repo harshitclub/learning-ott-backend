@@ -1,7 +1,7 @@
 import z from 'zod'
 import { CustomValidators } from './custom.validator'
 
-// User Login Validator
+// Login Validator
 export const loginValidator = z.object({
   email: CustomValidators.email,
   password: CustomValidators.password

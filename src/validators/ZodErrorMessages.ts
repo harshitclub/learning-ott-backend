@@ -8,17 +8,23 @@ export enum ZodErrorMessages {
   // Username
   USERNAME_MIN = 'Username must be at least 4 characters long',
   USERNAME_MAX = 'Username too long',
+  USERNAME_INVALID = 'Username can only contain letters and numbers.',
 
   // Email
   EMAIL_INVALID = 'Invalid email format',
   EMAIL_MAX = 'Email is too long',
 
   // Phone
-  PHONE_MIN = 'Phone number must be at least 10 digits',
-  PHONE_MAX = 'Phone number cannot exceed 15 digits',
+  PHONE_INVALID = 'Phone number must be 10 to 15 digits.',
 
   // Password
   PASSWORD_REQUIRED = 'Password is required',
   PASSWORD_MIN = 'Password must be at least 6 characters',
-  PASSWORD_COMPLEXITY = 'Password must be at least 6 characters long, include 1 uppercase letter, 1 number, and 1 special character (@$!%*?&)'
+  PASSWORD_COMPLEXITY = 'Password must be at least 6 characters long, include 1 uppercase letter, 1 number, and 1 special character (@$!%*?&)',
+
+  // Profile
+  PROFILE_BIO_MIN = 'Bio must be at least 3 characters.',
+  PROFILE_BIO_MAX = 'Bio cannot be longer than 300 characters.',
+  PROFILE_URL_MAX = 'URL too long.',
+  PROFILE_URL_INVALID = 'Link must be a valid URL.'
 }
