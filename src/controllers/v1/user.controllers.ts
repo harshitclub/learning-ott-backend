@@ -8,7 +8,10 @@ import { logger } from '../../configs/logger'
 import { Messages } from '../../configs/messages'
 
 // Validators
-import { signupUserValidator } from '../../validators/user.validator'
+import {
+  signupUserValidator,
+  updateUserValidator
+} from '../../validators/user.validator'
 
 // Utils — Core
 import { ApiResponse } from '../../utils/apiResponse'
@@ -36,6 +39,8 @@ import { verifyEmailTemplate } from '../../emails/templates/auth/verify-email'
 import { Prisma } from '../../../generated/prisma'
 import redisCache from '../../configs/redisCache'
 import { loginValidator } from '../../validators/common.validator'
+import { isObject } from '../../utils/isObject'
+import { getUser } from '../../utils/getUser'
 
 const { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, REFRESH_TTL_MS } =
   config.COOKIE
@@ -187,7 +192,7 @@ export async function userVerifyEmail(req: Request, res: Response) {
   // If no match, return generic invalid link message
   if (!user) {
     logger.warn(`Email verify failed: invalid/expired token`)
-    return ApiResponse.error(req, res, 400, Messages.INVALID_LINK)
+    return ApiResponse.error(req, res, 400, Messages.VERIFICATION_TOKEN_INVALID)
   }
 
   // Timing-safe comparison (prevents leaking token validity via timing attacks)
@@ -195,7 +200,7 @@ export async function userVerifyEmail(req: Request, res: Response) {
 
   if (!matches) {
     logger.warn(`Email verify failed: timingSafeMatch mismatch`)
-    return ApiResponse.error(req, res, 400, Messages.INVALID_LINK)
+    return ApiResponse.error(req, res, 400, Messages.VERIFICATION_TOKEN_INVALID)
   }
 
   // Mark verification as complete and invalidate token
@@ -213,7 +218,7 @@ export async function userVerifyEmail(req: Request, res: Response) {
   logger.info(`Email verified | userId=${user.id}`)
 
   // Return success response
-  return ApiResponse.success(req, res, 200, Messages.VERIFIED)
+  return ApiResponse.success(req, res, 200, Messages.EMAIL_VERIFIED)
 }
 
 /**
@@ -387,7 +392,7 @@ export async function refreshHandler(req: Request, res: Response) {
 
   // 1) Must have refresh cookie to proceed
   if (!rawRefresh) {
-    throw new AppError(Messages.REFRESH_TOKEN_MISSING, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   // 2) Verify refresh JWT
@@ -396,22 +401,22 @@ export async function refreshHandler(req: Request, res: Response) {
   try {
     decodedToken = verifyRefreshToken(rawRefresh)
   } catch {
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   // Ensure decoded token is an object with jti + sub
   if (typeof decodedToken !== 'object' || decodedToken === null) {
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   const jtiValue = decodedToken.jti
   const subValue = decodedToken.sub
 
   if (typeof jtiValue !== 'string' || !jtiValue.trim()) {
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
   if (typeof subValue !== 'string' || !subValue.trim()) {
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   const jti = jtiValue
@@ -434,7 +439,7 @@ export async function refreshHandler(req: Request, res: Response) {
     } catch {
       // ignore update errors while continuing to fail request
     }
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   // Token is known but revoked → revoke everything and fail
@@ -443,7 +448,7 @@ export async function refreshHandler(req: Request, res: Response) {
       where: { userId: existing.userId },
       data: { revoked: true }
     })
-    throw new AppError(Messages.REFRESH_TOKEN_INVALID, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   // Token expired → mark revoked and fail
@@ -452,7 +457,7 @@ export async function refreshHandler(req: Request, res: Response) {
       where: { id: existing.id },
       data: { revoked: true }
     })
-    throw new AppError(Messages.REFRESH_TOKEN_EXPIRED, 401)
+    throw new AppError(Messages.TOKEN_INVALID, 401)
   }
 
   // 4) Rotate refresh token (replace old one with new one)
@@ -509,13 +514,9 @@ export async function refreshHandler(req: Request, res: Response) {
 }
 
 export async function userProfile(req: Request, res: Response) {
-  const userId = req.user?.id
+  const { id } = getUser(req)
 
-  if (!userId) {
-    throw new AppError(Messages.TOKEN_REQUIRED, 401)
-  }
-
-  const cacheKey = `user:${userId}`
+  const cacheKey = `user:${id}`
 
   // 1) Try Cache First
   const cached = await redisCache.get(cacheKey)
@@ -529,7 +530,7 @@ export async function userProfile(req: Request, res: Response) {
 
   // 2) Cache Miss → Fetch from DB
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id },
     select: {
       id: true,
       firstName: true,
@@ -554,7 +555,77 @@ export async function userProfile(req: Request, res: Response) {
     isCached: false
   })
 }
-export async function userUpdate() {}
+export async function userUpdate(req: Request, res: Response) {
+  const { id } = getUser(req)
+
+  const parsed = await updateUserValidator.safeParseAsync(req.body)
+
+  if (!parsed.success) throw new AppError(Messages.VALIDATION_FAILED, 400)
+
+  const updateData = parsed.data
+
+  if (Object.keys(updateData).length === 0) {
+    throw new AppError(Messages.NO_VALID_FIELD, 400)
+  }
+
+  // read once (needed to merge profile)
+  const existing = await prisma.user.findUnique({
+    where: {
+      id
+    },
+    select: {
+      profile: true
+    }
+  })
+
+  if (!existing) throw new AppError(Messages.NOT_FOUND, 404)
+
+  const data: Record<string, unknown> = {}
+
+  // presence-based assignment (allows empty string if schema permits it)
+  if ('firstName' in updateData) data.firstName = updateData.firstName
+  if ('lastName' in updateData) data.lastName = updateData.lastName
+  if ('username' in updateData) data.username = updateData.username
+  if ('phone' in updateData) data.phone = updateData.phone
+
+  // merge profile only if client sent it
+  if ('profile' in updateData && updateData.profile) {
+    const current = isObject(existing.profile) ? existing.profile : {}
+    data.profile = { ...current, ...updateData.profile }
+  }
+
+  let updatedUser
+
+  try {
+    updatedUser = await prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        phone: true,
+        profile: true,
+        email: true
+      }
+    })
+  } catch (err) {
+    // Prisma unique field error
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2002'
+    ) {
+      throw new AppError('Username already taken', 409)
+    }
+    throw err
+  }
+
+  const cacheKey = `user:${id}`
+  await redisCache.set(cacheKey, JSON.stringify(updatedUser), 'EX', 3600)
+
+  return ApiResponse.success(req, res, 200, Messages.USER_UPDATED, updatedUser)
+}
 export async function userChangePassword() {}
 export async function userRequestVerification() {}
 export async function userRequestResetPassword() {}

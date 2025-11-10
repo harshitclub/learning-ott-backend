@@ -17,7 +17,7 @@ userRoutesV1.post('/signup', asyncHandler(userSignup))
 userRoutesV1.get('/verify', asyncHandler(userVerifyEmail))
 userRoutesV1.post('/login', asyncHandler(userLogin))
 userRoutesV1.get('/me', authenticateUser, asyncHandler(userProfile))
-userRoutesV1.patch('/me', asyncHandler(userUpdate))
+userRoutesV1.patch('/me', authenticateUser, asyncHandler(userUpdate))
 userRoutesV1.post('/refresh', asyncHandler(refreshHandler))
 userRoutesV1.patch(
   '/change-password',

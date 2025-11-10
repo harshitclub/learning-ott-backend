@@ -1,93 +1,92 @@
 export const Messages = {
-  // General / System
+  // ───── General ─────
   SUCCESS: 'Operation completed successfully',
-  FAILED: 'An error occurred. Please try again later',
+  FAILED: 'Something went wrong. Please try again.',
   SERVER_ERROR: 'Internal server error',
   BAD_REQUEST: 'Bad request',
   VALIDATION_FAILED: 'Validation failed',
-  NOT_FOUND: 'Requested resource not found',
+  NOT_FOUND: 'Resource not found',
   ROUTE_NOT_FOUND: 'Endpoint not found',
   UNAUTHORIZED: 'Authentication required',
   FORBIDDEN: 'Access denied',
-  TOO_MANY_REQUESTS: 'Too many requests. Please try again later',
-  UNDER_MAINTENANCE: 'Service is temporarily unavailable for maintenance',
+  TOO_MANY_REQUESTS: 'Too many requests. Try again later',
+  UNDER_MAINTENANCE: 'Service temporarily unavailable',
   FEATURE_UNAVAILABLE: 'This feature is currently unavailable',
 
-  // Auth & Tokens
-  LOGIN_SUCCESS: 'Login successful',
-  LOGIN_FAILED: 'Invalid credentials',
+  // ───── Auth ─────
+  LOGIN_SUCCESS: 'Logged in successfully',
+  LOGIN_FAILED: 'Invalid login credentials',
   LOGOUT_SUCCESS: 'Logged out successfully',
   TOKEN_INVALID: 'Invalid or expired token',
   TOKEN_REQUIRED: 'Authorization token required',
-  TOKEN_REFRESHED: 'Access token refreshed',
-  TOKEN_REVOKED: 'Session revoked',
-  SESSION_NOT_FOUND: 'Session not found',
+  TOKEN_REFRESHED: 'Token refreshed successfully',
   ACCESS_DENIED: 'You do not have permission to perform this action',
-  REFRESH_TOKEN_MISSING: 'Refresh token missing',
-  REFRESH_TOKEN_INVALID: 'Invalid or expired refresh token',
-  REFRESH_TOKEN_EXPIRED: 'Refresh token expired',
-  MISSING_VERIFICATION_TOKEN: 'Missing verification token',
-  INVALID_LINK: 'Invalid or expired link',
-  VERIFIED: 'Email verified',
 
-  // User & Account
+  // ───── Verification ─────
+  EMAIL_VERIFIED: 'Email verified successfully',
+  EMAIL_NOT_VERIFIED: 'Email is not verified',
+  VERIFICATION_EMAIL_SENT: 'Verification email sent',
+  VERIFICATION_TOKEN_INVALID: 'Invalid or expired verification link',
+  VERIFICATION_TOKEN_EXPIRED: 'Verification token has expired',
+  MISSING_VERIFICATION_TOKEN: 'Verification token not found',
+
+  // ───── User Profile ─────
+  USER_NOT_FOUND: 'User not found',
   USER_CREATED: 'Account created successfully',
   USER_UPDATED: 'Account updated successfully',
   USER_DELETED: 'Account deleted successfully',
-  USER_NOT_FOUND: 'User not found',
-  USER_ALREADY_EXISTS: 'Unable to create account with provided email',
-  PROFILE_FETCHED: 'Profile Fetched',
-  EMAIL_VERIFIED: 'Email verified successfully',
-  EMAIL_NOT_VERIFIED: 'Email not verified',
-  VERIFICATION_EMAIL_SENT: 'Verification email has been sent',
-  VERIFICATION_TOKEN_EXPIRED: 'Verification token has expired',
-  VERIFICATION_TOKEN_INVALID: 'Verification token is invalid or already used',
+  USER_ALREADY_EXISTS: 'User with this email already exists',
+  NO_VALID_FIELD: 'No valid fields provided for update',
+  PROFILE_FETCHED: 'Profile retrieved successfully',
   PASSWORD_CHANGED: 'Password changed successfully',
-  PASSWORD_RESET_REQUESTED:
-    'If an account exists, a password reset link has been sent',
+
+  // ───── Password Reset ─────
+  PASSWORD_RESET_REQUESTED: 'If an account exists, a reset link has been sent',
   PASSWORD_RESET_SUCCESS: 'Password has been reset successfully',
-  PASSWORD_RESET_FAILED: 'Unable to reset password',
-  PASSWORD_WEAK: 'Password does not meet complexity requirements',
+  PASSWORD_RESET_FAILED: 'Failed to reset password',
+  PASSWORD_WEAK: 'Password does not meet security requirements',
 
-  // Security / Abuse
+  // ───── Security / Abuse ─────
   ACCOUNT_LOCKED: 'Account temporarily locked due to multiple failed attempts',
-  CAPTCHA_REQUIRED: 'Please complete the CAPTCHA challenge',
-  RATE_LIMITED: 'Rate limit exceeded. Try again later',
   SUSPICIOUS_ACTIVITY:
-    'Suspicious activity detected. Please verify your account',
+    'Suspicious activity detected. Additional verification required',
 
-  // Email / Notifications
+  // ───── Email / Notifications ─────
   EMAIL_SENT: 'Email sent successfully',
   EMAIL_FAILED: 'Failed to send email',
 
-  // Database / Integration
-  DB_CONNECTION_ERROR: 'Unable to connect to database',
+  // ───── Database ─────
+  DB_CONNECTION_ERROR: 'Could not connect to database',
   DB_OPERATION_FAILED: 'Database operation failed',
-  EXTERNAL_SERVICE_ERROR: 'External service error. Please try again later',
 
-  // Files / Uploads
+  // ───── File Uploads ─────
   FILE_UPLOAD_SUCCESS: 'File uploaded successfully',
   FILE_UPLOAD_FAILED: 'File upload failed',
-  FILE_TOO_LARGE: 'Uploaded file is too large',
-  FILE_TYPE_NOT_ALLOWED: 'Uploaded file type is not allowed',
+  FILE_TOO_LARGE: 'File size exceeds allowed limit',
+  FILE_TYPE_NOT_ALLOWED: 'File type not allowed',
 
-  // Admin / Management
-  ADMIN_CREATED: 'Administrator account created',
-  ADMIN_UPDATED: 'Administrator updated',
-  ADMIN_DELETED: 'Administrator deleted',
+  // ───── Admin (NEW + CLEAN) ─────
+  ADMIN_CREATED: 'Admin account created successfully',
+  ADMIN_UPDATED: 'Admin details updated successfully',
+  ADMIN_DELETED: 'Admin account deleted successfully',
+  ADMIN_NOT_FOUND: 'Admin not found',
+  ADMIN_ACTION_FORBIDDEN: 'Only administrators can perform this action',
 
-  // Misc
+  // ───── System / Misc ─────
   INVALID_REQUEST: 'Invalid request format',
-  CONFIG_ERROR: 'Service configuration error',
+  CONFIG_ERROR: 'Configuration error',
   HEALTH_OK: 'OK'
 }
 
 // Optional: machine-friendly error codes (useful for frontend localization & logic)
 export const MessageCodes = {
   VALIDATION_FAILED: 'VALIDATION_FAILED',
-  USER_EXISTS: 'USER_ALREADY_EXISTS',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  USER_EXISTS: 'USER_EXISTS',
   EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
-  VERIFICATION_EXPIRED: 'VERIFICATION_TOKEN_EXPIRED',
+  VERIFICATION_EXPIRED: 'VERIFICATION_EXPIRED',
   PASSWORD_WEAK: 'PASSWORD_WEAK',
   ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
   RATE_LIMITED: 'RATE_LIMITED',
