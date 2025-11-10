@@ -11,9 +11,9 @@ export const signupUserValidator = z.object({
 
 // User Update Profile Validator
 export const updateUserValidator = z.object({
-  firstName: CustomValidators.firstName,
-  lastName: CustomValidators.lastName,
-  username: CustomValidators.username,
-  phone: CustomValidators.phone,
-  profile: CustomValidators.profile
+  firstName: CustomValidators.firstName.optional(),
+  lastName: CustomValidators.lastName.optional(),
+  username: CustomValidators.username.optional(),
+  phone: CustomValidators.phone.optional(),
+  profile: CustomValidators.profile.optional()
 })
