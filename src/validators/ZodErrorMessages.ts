@@ -5,6 +5,10 @@ export enum ZodErrorMessages {
   LAST_NAME_MIN = 'Last name must be at least 2 characters long',
   LAST_NAME_MAX = 'Last name is too long',
 
+  // Username
+  USERNAME_MIN = 'Username must be at least 4 characters long',
+  USERNAME_MAX = 'Username too long',
+
   // Email
   EMAIL_INVALID = 'Invalid email format',
   EMAIL_MAX = 'Email is too long',
